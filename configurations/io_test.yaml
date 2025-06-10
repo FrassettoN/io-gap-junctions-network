@@ -1,0 +1,113 @@
+name: DBBS IO volume
+packages:
+  - bsb-nest~=4.3
+components:
+  - nest_models/build_models.py
+storage:
+  engine: hdf5
+  root: networks/io_volume.hdf5
+network:
+  x: 50
+  y: 50
+  z: 50
+regions:
+  inferior_olivary:
+    type: group
+    children:
+      - io_layer
+partitions:
+  io_layer:
+    thickness: 50
+cell_types:
+  io:
+    spatial:
+      radius: 7.5
+      density: 3.9e-5
+    plotting:
+      display_name: Inferior olivary cells
+placement:
+  io_layer_placement:
+    strategy: bsb.placement.RandomPlacement
+    partitions:
+      - io_layer
+    cell_types:
+      - io
+connectivity:
+  gap_io:
+    strategy: bsb.connectivity.FixedOutdegree
+    outdegree: 2
+    presynaptic:
+      cell_types:
+        - io
+    postsynaptic:
+      cell_types:
+        - io
+
+simulations:
+  basal_activity:
+    simulator: nest
+    resolution: 0.1
+    duration: 5000
+    modules:
+      - iomodule
+    cell_models:
+      io:
+        model: eglif_cond_alpha_multisyn
+        constants:
+          t_ref: 1
+          C_m: 189
+          V_th: -35
+          V_reset: -45
+          E_L: -45
+          I_e: -18.101
+          V_m: -45
+          lambda_0: 1.2
+          tau_V: 0.8
+          tau_m: 11
+          k_adap: 1.928
+          k_1: 0.191
+          k_2: 0.091
+          A1: 1810.923
+          A2: 1358.197
+          tau_syn1: 1
+          tau_syn2: 60
+          E_rev1: 0
+          E_rev2: -80
+    connection_models:
+      gap_io:
+        synapse:
+          model: gap_junction
+          weight: 1
+          delay: 0.1
+        rule: one_to_one
+        make_symmetric: True
+    devices:
+      background_noise:
+        device: poisson_generator
+        rate: 10
+        weight: 15
+        delay: 0.5
+        receptor_type: 1
+        targetting:
+          strategy: by_id
+          ids:
+            io:
+              - 1
+      io_record:
+        device: spike_recorder
+        delay: 0.1
+        targetting:
+          strategy: cell_model
+          cell_models:
+            - io
+      io_Vm_record:
+        device: multimeter
+        delay: 0.1
+        properties:
+          - V_m
+        units:
+          - mV
+        targetting:
+          strategy: cell_model
+          cell_models:
+            - io
