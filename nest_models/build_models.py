@@ -14,7 +14,7 @@ def _build_nest_models(
     model_dir=dirname(__file__),
     build_dir=join(_cache_path, "nest_build"),
     module_name="iomodule",
-    redo=True,
+    redo=False,
 ):
     """
     Build all the nestml models within the provided model directory and deploy them.
@@ -50,12 +50,12 @@ def _build_nest_models(
             target_platform="NEST",
             target_path=build_dir,
             module_name=module_name,
-            codegen_opts={"gap_junctions": {
-                            "enable": True,
-                            "membrane_potential_variable": "V_m",
-                            "gap_current_port": "I_gap"
-                            }
-                        }
+            # codegen_opts={"gap_junctions": {
+            #                 "enable": True,
+            #                 "membrane_potential_variable": "V_m",
+            #                 "gap_current_port": "I_gap"
+            #                 }
+            #             }
         )
 
 _build_nest_models()

@@ -1,0 +1,246 @@
+name: DBBS DNC-IO
+packages:
+  - bsb-nest~=4.3
+components:
+  - nest_models/build_models.py
+storage:
+  engine: hdf5
+  root: networks/dcn_io.hdf5
+network:
+  x: 100
+  y: 100
+  z: 150
+regions:
+  cerebellar_nuclei:
+    type: group
+    children:
+      - dcn_layer
+  inferior_olivary:
+    type: group
+    children:
+      - io_layer
+partitions:
+  dcn_layer:
+    origin: [0, 0, 0]
+    thickness: 100
+  io_layer:
+    origin: [0, 0, 100]
+    thickness: 50
+cell_types:
+  dcn_p:
+    spatial:
+      radius: 9.5
+      density: 9.92e-6
+    plotting:
+      display_name: Deep Cerebellar Nuclei type p
+  dcn_i:
+    spatial:
+      radius: 7.0
+      density: 5.58e-6
+    plotting:
+      display_name: Deep Cerebellar Nuclei type i
+  io:
+    spatial:
+      radius: 7.5
+      density: 3.9e-5
+    plotting:
+      display_name: Inferior Olivary cells
+placement:
+  dcn_p_layer_placement:
+    strategy: bsb.placement.RandomPlacement
+    partitions:
+      - dcn_layer
+    cell_types:
+      - dcn_p
+  dcn_i_layer_placement:
+    strategy: bsb.placement.RandomPlacement
+    partitions:
+      - dcn_layer
+    cell_types:
+      - dcn_i
+  io_layer_placement:
+    strategy: bsb.placement.RandomPlacement
+    partitions:
+      - io_layer
+    cell_types:
+      - io
+connectivity:
+  io_to_dcn_p:
+    strategy: bsb.connectivity.FixedOutdegree
+    presynaptic:
+      cell_types:
+        - io
+    postsynaptic:
+      cell_types:
+        - dcn_p
+    outdegree: 5
+  io_to_dcn_i:
+    strategy: bsb.connectivity.FixedOutdegree
+    presynaptic:
+      cell_types:
+        - io
+    postsynaptic:
+      cell_types:
+        - dcn_i
+    outdegree: 5
+  dcn_i_to_io:
+    strategy: bsb.connectivity.FixedIndegree
+    presynaptic:
+      cell_types:
+        - dcn_i
+    postsynaptic:
+      cell_types:
+        - io
+    indegree: 5
+simulations:
+  basal_activity:
+    simulator: nest
+    resolution: 0.1
+    duration: 5000
+    modules:
+      - iomodule
+    cell_models:
+      io:
+        model: eglif_cond_alpha_multisyn
+        constants:
+          # Membrane Potential
+          V_m: -45
+          E_L: -45
+          C_m: 189
+          tau_m: 11
+          I_e: -18.101
+          k_adap: 1.928
+          k_1: 0.191
+          k_2: 0.08645
+
+          # V Threshold, Refractory Period and Escape rate
+          V_th: -35
+          t_ref: 1
+          tau_V: 0.8
+          lambda_0: 1.2
+
+          # Reset on Spike
+          V_reset: -45
+          A1: 1810.923
+          A2: 1358.197
+
+          # Postsynaptic receptor
+          tau_syn1: 1
+          tau_syn2: 60
+          E_rev1: 0
+          E_rev2: -80
+      dcn_p:
+        model: eglif_cond_alpha_multisyn
+        constants:
+          t_ref: 1.5
+          C_m: 142
+          V_th: -36
+          V_reset: -55
+          E_L: -45
+          I_e: 75.385
+          V_m: -45
+          lambda_0: 3.0
+          tau_V: 3.0
+          tau_m: 33
+          k_adap: 0.408
+          k_1: 0.697
+          k_2: 0.047
+          A1: 13.857
+          A2: 3.477
+          tau_syn1: 1.0
+          tau_syn2: 0.7
+          E_rev1: 0
+          E_rev2: -80
+      dcn_i:
+        model: eglif_cond_alpha_multisyn
+        constants:
+          t_ref: 3
+          C_m: 56
+          V_th: -39
+          V_reset: -55
+          E_L: -40
+          I_e: 2.384
+          V_m: -40
+          lambda_0: 0.9
+          tau_V: 1.0
+          tau_m: 56
+          k_adap: 0.079
+          k_1: 0.041
+          k_2: 0.044
+          A1: 176.358
+          A2: 176.358
+          tau_syn1: 3.64
+          tau_syn2: 1.14
+          E_rev1: 0
+          E_rev2: -80
+    connection_models:
+      io_to_dcn_p:
+        synapse:
+          model: static_synapse
+          weight: 0.4
+          delay: 4
+          receptor_type: 1
+      io_to_dcn_i:
+        synapse:
+          model: static_synapse
+          weight: 0.25
+          delay: 5
+          receptor_type: 1
+      dcn_i_to_io:
+        synapse:
+          model: static_synapse
+          weight: 0.45
+          delay: 25
+          receptor_type: 2
+    devices:
+      io_background_noise:
+        device: dc_generator
+        amplitude: 50
+        weight: 2
+
+        start: 1200.0
+        stop: 1400.0
+        delay: 0.1
+
+        targetting:
+          strategy: cell_model
+          cell_models:
+            - io
+
+      dcn_background_noise:
+        #   # device: dc_generator
+        #   # amplitude: 20
+        #   # weight: 1
+
+        device: poisson_generator
+        rate: 40
+        weight: 3
+        receptor_type: 2
+
+        start: 400.0
+        stop: 4000.0
+        delay: 0.1
+
+        targetting:
+          strategy: cell_model
+          cell_models:
+            - dcn_i
+            - dcn_p
+      io_record:
+        device: spike_recorder
+        delay: 0.1
+        targetting:
+          strategy: cell_model
+          cell_models:
+            - io
+      io_Vm_record:
+        device: multimeter
+        delay: 0.1
+        properties:
+          - V_m
+        units:
+          - mV
+        targetting:
+          strategy: cell_model
+          cell_models:
+            - io

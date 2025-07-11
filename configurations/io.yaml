@@ -35,7 +35,7 @@ placement:
 connectivity:
   gap_io:
     strategy: bsb.connectivity.FixedOutdegree
-    outdegree: 2
+    outdegree: 0
     presynaptic:
       cell_types:
         - io
@@ -54,40 +54,62 @@ simulations:
       io:
         model: eglif_cond_alpha_multisyn
         constants:
-          t_ref: 1
-          C_m: 189
-          V_th: -35
-          V_reset: -45
-          E_L: -45
-          I_e: -18.101
+          # Membrane Potential
           V_m: -45
-          lambda_0: 1.2
-          tau_V: 0.8
+          E_L: -45
+          C_m: 189
           tau_m: 11
+          I_e: -18.101
           k_adap: 1.928
           k_1: 0.191
-          k_2: 0.091
+          # k_2: 0.091
+          k_2: 0.090909
+
+          # V Threshold, Refractory Period and Escape rate
+          V_th: -35
+          t_ref: 1
+          tau_V: 0.8
+          lambda_0: 1.2
+
+          # Reset on Spike
+          V_reset: -45
           A1: 1810.923
           A2: 1358.197
+
+          # Postsynaptic receptor
           tau_syn1: 1
           tau_syn2: 60
           E_rev1: 0
           E_rev2: -80
+
     connection_models:
+      # gap_io:
+      #   synapse:
+      #     model: gap_junction
+      #     weight: 1
+      #     delay: 0.1
+      #   rule: one_to_one
+      #   make_symmetric: True
       gap_io:
         synapse:
-          model: gap_junction
-          weight: 1
-          delay: 0.1
-        rule: one_to_one
-        make_symmetric: True
+          model: static_synapse
+          weight: 0.25
+          delay: 4.
+          receptor_type: 1
     devices:
       background_noise:
-        device: poisson_generator
-        rate: 10
-        weight: 15
-        delay: 0.5
-        receptor_type: 1
+        device: dc_generator
+        amplitude: 20
+        weight: 1
+
+        # device: poisson_generator
+        # rate: 40
+        # weight: 3
+        # receptor_type: 4
+        start: 500.0
+        stop: 550.0
+        delay: 0.1
+
         targetting:
           strategy: by_id
           ids:
