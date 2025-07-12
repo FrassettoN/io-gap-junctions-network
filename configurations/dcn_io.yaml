@@ -1,6 +1,6 @@
 name: DBBS DNC-IO
 packages:
-  - bsb-nest~=4.3
+  - bsb-nest~=6.0
 components:
   - nest_models/build_models.py
 storage:
