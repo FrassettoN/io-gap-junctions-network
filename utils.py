@@ -1,5 +1,7 @@
 from matplotlib import pylab as plt 
 import quantities as pq
+import os
+from pynestml.frontend.pynestml_frontend import generate_nest_target
 
 
 # Get and extract device data from the configuration
@@ -142,3 +144,18 @@ def plot_signal(signal, devices=[], start=None, stop=None, figsize=(10, 4), titl
     if output:
         plt.savefig(output,dpi=100)
     plt.show()
+
+def generate_code(neuron_model: str):
+    codegen_opts = {"gap_junctions": {"enable": True,
+                                        "gap_current_port": "I_stim",
+                                        "membrane_potential_variable": "V_m"}}
+
+    files = os.path.join("./", "nest_models", neuron_model + ".nestml")
+    print(files)
+    generate_nest_target(input_path=files,
+                            logging_level="WARNING",
+                            module_name="nestml_gap_" + neuron_model + "_module",
+                            suffix="_nestml",
+                            codegen_opts=codegen_opts)
+
+    return neuron_model
