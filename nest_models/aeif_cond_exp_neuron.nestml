@@ -85,8 +85,9 @@ model aeif_cond_exp_neuron:
         inline I_spike pA = g_L * Delta_T * exp(exp_arg)
         inline I_syn_exc pA = convolve(g_exc, exc_spikes) * nS * (V_bounded - E_exc)
         inline I_syn_inh pA = convolve(g_inh, inh_spikes) * nS * (V_bounded - E_inh)
+        recordable inline I_stim_recordable pA = I_stim
 
-        V_m' = (-g_L * (V_bounded - E_L) + I_spike - I_syn_exc - I_syn_inh - w + I_e + I_stim) / C_m
+        V_m' = (-g_L * (V_bounded - E_L) + I_spike - I_syn_exc - I_syn_inh - w + I_e + I_stim_recordable) / C_m
         w' = (a * (V_bounded - E_L) - w) / tau_w
 
         refr_t' = -1e3 * ms/s    # refractoriness is implemented as an ODE, representing a timer counting back down to zero. XXX: TODO: This should simply read ``refr_t' = -1 / s`` (see https://github.com/nest/nestml/issues/984)
