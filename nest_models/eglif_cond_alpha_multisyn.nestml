@@ -75,10 +75,11 @@ model eglif_cond_alpha_multisyn:
         inline I_syn3 pA = convolve(syn_kernel3, syn3_spike) * nS * (E_rev3 - V_m)
         inline I_syn4 pA = convolve(syn_kernel4, syn4_spike) * nS * (E_rev4 - V_m)
         recordable inline I_syn pA =  I_syn1 + I_syn2 + I_syn3 + I_syn4
+        recordable inline I_stim_recordable pA = I_stim
 
         # Update membrane potential, adaptation and spike triggered currents
         # WARNING: SIGN BELOW IS INCORRECT FOR A LIF MODEL -> Should be V_m' = - (V_m - E_L) / tau_m + ...
-        V_m' = (V_m - E_L) / tau_m + (I_e + I_stim - I_adap + I_dep + I_syn) / C_m
+        V_m' = (V_m - E_L) / tau_m + (I_e + I_stim_recordable - I_adap + I_dep + I_syn) / C_m
         I_dep' = - I_dep * k_1 / ms
         I_adap' = (V_m - E_L) * (k_adap * nS / ms) - I_adap * (k_2 / ms)
 
