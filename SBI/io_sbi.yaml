@@ -1,0 +1,82 @@
+name: DBBS IO volume
+packages:
+  - bsb-nest~=6.0
+storage:
+  engine: hdf5
+  root: io_sbi.hdf5
+network:
+  x: 30
+  y: 30
+  z: 30
+regions:
+  inferior_olivary:
+    type: group
+    children:
+      - io_layer
+partitions:
+  io_layer:
+    thickness: 30
+cell_types:
+  io:
+    spatial:
+      radius: 7.5
+      density: 3.9e-5
+    plotting:
+      display_name: Inferior olivary cells
+placement:
+  io_layer_placement:
+    strategy: bsb.placement.RandomPlacement
+    partitions:
+      - io_layer
+    cell_types:
+      - io
+connectivity:
+  fake_connectivity:
+    strategy: bsb.connectivity.FixedOutdegree
+    outdegree: 0
+    presynaptic:
+      cell_types:
+        - io
+    postsynaptic:
+      cell_types:
+        - io
+
+simulations:
+  basal_activity:
+    simulator: nest
+    resolution: 0.1
+    duration: 5000
+    cell_models:
+      io:
+        model: aeif_cond_alpha_multisynapse
+        constants:
+          # Membrane Potential
+          V_m: -45
+          E_L: -45
+    
+    connection_models:
+      fake_connectivity:
+        synapse:
+          model: static_synapse
+          weight: 1
+          delay: 1
+          receptor_type: 1
+    devices:
+      io_record:
+        device: spike_recorder
+        delay: 0.1
+        targetting:
+          strategy: cell_model
+          cell_models:
+            - io
+      io_Vm_record:
+        device: multimeter
+        delay: 0.1
+        properties:
+          - V_m
+        units:
+          - mV
+        targetting:
+          strategy: cell_model
+          cell_models:
+            - io
