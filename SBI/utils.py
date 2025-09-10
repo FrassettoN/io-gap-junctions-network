@@ -31,5 +31,5 @@ def plot_sr(sr, show=False, save=False, output="images/spikes"):
 
 def analyze_vm(vm):
     vm_values = vm.events["V_m"]
-    return np.mean(vm_values)
+    return float(np.mean(vm_values))
 
