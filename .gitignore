@@ -1,8 +1,8 @@
 networks/
-*.hdf5
 
 __pycache__
 target/
 report/
 utils/
-SBI/
+SBI/sbi_parametrization.py
+SBI/sim.py
