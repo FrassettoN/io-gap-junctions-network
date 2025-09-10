@@ -103,7 +103,7 @@ V_m of cell 2 and cell 4 are equal: True
 ```
 
 EGLIF Voltage Trace
-![EGLIF Voltage Trace](./images/EGLIF%20Voltage%20Trace.png)
+![EGLIF voltage trace](./images/EGLIF%20Voltage%20Trace.png)
 Overlapping traces show no coupling
 
 #### **Results for ```aeif_cond_exp``` and ```hh_psc_alpha```** 
@@ -113,7 +113,7 @@ V_m of cell 2 and cell 4 are equal: False
 ```
 
 AEIF Voltage Trace
-![AEIF Voltage Trace](./images/AEIF%20Voltage%20Trace.png)
+![AEIF voltage trace](./images/AEIF%20Voltage%20Trace.png)
 Converging traces show correct gap junction behavior.
 
 For this test, the following parameter modifications were applied:
