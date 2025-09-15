@@ -6,3 +6,4 @@ report/
 utils/
 SBI/sbi_parametrization.py
 SBI/sim.py
+SBI/sbi-logs
