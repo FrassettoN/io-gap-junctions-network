@@ -1,9 +1,7 @@
+from mpi4py import MPI
 import numpy as np
 import torch
-from mpi4py import MPI
 from tqdm import tqdm
-
-import nest
 
 from sbi import analysis as analysis
 from sbi import utils as utils
@@ -14,58 +12,8 @@ from sbi.utils.user_input_checks import (
     process_simulator,
 )
 
-from utils import plot_vm, plot_sr
-from analyze_simulation import analyze
-
-DEFAULT_PARAMETERS = {
-    "V_m": -70.6,
-    # "w": 5, # Must be 5 https://nest-simulator.readthedocs.io/en/stable/model_details/aeif_models_implementation.html
-    "C_m": 281.0,
-    # "t_ref": 0.0,
-    # "V_reset": -60.0,
-    "E_L": -70.6,
-    # "g_L": 30.0,
-    "I_e": 0.0,
-    # "Delta_T": 2.0,
-    # "V_th": -50.4,
-    # "V_peak" : 0.0,
-    "a": 4.0,
-    "b": 80.5,
-    # "tau_w": 144.0,
-}
-
-
-def create_parameters_dict(parameters) -> dict:
-    parameters_names = list(DEFAULT_PARAMETERS.keys())
-
-    parameters_dict = {}
-    for i, parameter in enumerate(parameters):
-        parameter_name = parameters_names[i]
-        parameters_dict[parameter_name] = float(parameter)
-
-    return parameters_dict
-
-
-def simulate(parameters):
-    import nest
-
-    nest.ResetKernel()
-    nest.set_verbosity("M_WARNING")
-
-    neuron = nest.Create("aeif_cond_alpha_multisynapse", 1)
-    parameters_dict = create_parameters_dict(parameters)
-    print(parameters_dict)
-    neuron.set(parameters_dict)
-    vm = nest.Create("voltmeter", params={"interval": 0.1})
-    sr = nest.Create("spike_recorder")
-    nest.Connect(vm, neuron)
-    nest.Connect(neuron, sr)
-
-    milliseconds = 5000.0
-    nest.Simulate(milliseconds)
-
-    results = analyze(vm, sr, milliseconds)
-    return results
+from simulate import simulate
+from parameters import create_priors
 
 
 if __name__ == "__main__":
@@ -74,18 +22,9 @@ if __name__ == "__main__":
     size = comm.Get_size()
 
     n_sims = 1000
-    param_values = np.array(list(DEFAULT_PARAMETERS.values()), dtype=float)
-    scale = 0.5
-    default_range = 10  # range for zero parameters
-    prior_min = np.where(
-        param_values != 0, param_values - scale * param_values, -default_range
-    )
-    prior_max = np.where(
-        param_values != 0, param_values + scale * param_values, default_range
-    )
-    priors = utils.torchutils.BoxUniform(
-        low=torch.as_tensor(prior_min), high=torch.as_tensor(prior_max)
-    )
+    obs_dict = {"firing_rate": 1.0, "vm_mean": -55.0, "STO_fr": 7.0, "STO_amp": 10.0}
+
+    priors = create_priors()
 
     if rank == 0:
         samples = priors.sample((n_sims,))
@@ -132,10 +71,9 @@ if __name__ == "__main__":
 
         print("POSTERIOR: ", posterior)
 
-        obs = torch.tensor([1, -65, 7, 10], dtype=torch.float32)
+        obs = torch.tensor(list(obs_dict.values()), dtype=torch.float32)
 
-        posterior_samples = posterior.sample((1,), x=obs)
-        print(posterior_samples)
+        posterior_samples = posterior.sample((n_sims,), x=obs)
     else:
         posterior_samples = None
 
@@ -147,7 +85,6 @@ if __name__ == "__main__":
 
     for i in local_indices:
         sim_result = simulate(posterior_samples[i])
-        print(sim_results)
         all_sim_results.append(sim_result)
         error = sim_result - obs.numpy()
         distance = np.linalg.norm(error)
@@ -183,5 +120,5 @@ if __name__ == "__main__":
         )
         best_theta = posterior_samples[best_idx]
         best_sim_output = total[best_idx]
-        print("Miglior theta trovato:", best_theta)
-        print("Output simulato con miglior theta:", best_sim_output)
+        print("Best Theta:", best_theta)
+        print("Best Output:", best_sim_output)
