@@ -9,7 +9,8 @@ Important note: the same implementation and testing protocol work correctly for 
 - OS: Ubuntu 20.04.5 (Windows Subsystem for Linux)
 
 #### **Code Availability**
-All simulation scripts and test code used for this report are available at  [gap_tester.ipynb](https://github.com/FrassettoN/io-gap-junctions-network/blob/main/nestml_gap_junctions/gap_tester.ipynb)
+All simulation scripts and test code used for this report are available at [gap_tester.ipynb](https://github.com/FrassettoN/io-gap-junctions-network/blob/main/nestml_gap_junctions/gap_tester.ipynb)
+
 #### **Model**
 The neuron model used is [eglif_cond_alpha_multisyn.nestml](https://github.com/dbbs-lab/cerebellar-models/blob/master/cerebellar_models/nest_models/eglif_cond_alpha_multisyn.nestml).
 Parameters were modified to enforce subthreshold oscillatory dynamics and avoid spiking, since the model includes a nonzero escape rate. This allows for a direct comparison of voltage traces between connected and not connected neurons.
@@ -103,7 +104,7 @@ V_m of cell 2 and cell 4 are equal: True
 ```
 
 EGLIF Voltage Trace
-![EGLIF voltage trace](./images/EGLIF%20Voltage%20Trace.png)
+![EGLIF voltage trace](./images/EGLIF.png)
 Overlapping traces show no coupling
 
 #### **Results for ```aeif_cond_exp``` and ```hh_psc_alpha```** 
@@ -113,7 +114,7 @@ V_m of cell 2 and cell 4 are equal: False
 ```
 
 AEIF Voltage Trace
-![AEIF voltage trace](./images/AEIF%20Voltage%20Trace.png)
+![AEIF voltage trace](./images/AdEx.png)
 Converging traces show correct gap junction behavior.
 
 For this test, the following parameter modifications were applied:
