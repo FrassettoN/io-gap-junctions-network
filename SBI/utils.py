@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from scipy.signal import welch, find_peaks
 
 
 def plot_vm(vm, spikes=[], peaks=[], show=False, save=False, output="V_m.png"):
@@ -38,7 +37,7 @@ def plot_vm(vm, spikes=[], peaks=[], show=False, save=False, output="V_m.png"):
         plt.savefig(output)
 
 
-def plot_sr(sr, show=False, save=False, output="images/spikes"):
+def plot_sr(sr, show=False, save=False, output="spikes.png"):
     evs = sr.events["senders"]
     ts = sr.events["times"]
     plt.figure(figsize=(10, 5))

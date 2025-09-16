@@ -7,3 +7,4 @@ utils/
 SBI/sbi_parametrization.py
 SBI/sbi-logs
 SBI/good_params.txt
+SBI/*.png

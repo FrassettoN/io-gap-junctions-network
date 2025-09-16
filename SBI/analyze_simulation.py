@@ -31,14 +31,23 @@ def compute_sto(v_m, t, spike_times=None, f_range=(5, 12), power_threshold=1e-6)
         peaks, _ = find_peaks(vm_clean, distance=400)
         troughs, _ = find_peaks(-vm_clean, distance=400)
 
-        # Make sure we align peaks/troughs
+        # f Make sure we align peaks/troughs
         min_len = min(len(peaks), len(troughs))
-        amplitudes = np.abs(vm_clean[peaks[:min_len]] - vm_clean[troughs[:min_len]])
-        mean_amp = np.mean(amplitudes)
+        if min_len > 0:
+            amplitudes = np.abs(vm_clean[peaks[:min_len]] - vm_clean[troughs[:min_len]])
+            mean_amp = np.mean(amplitudes)
+            amp_variance = np.var(amplitudes)  # Calculate variance of amplitudes
+            amp_std = np.std(amplitudes)  # Standard deviation for easier interpretation
+        else:
+            mean_amp = 0
+            amp_variance = 0
+            amp_std = 0
     else:
         mean_amp = 0
+        amp_variance = 0
+        amp_std = 0
 
-    return sto_freq, mean_amp
+    return sto_freq, mean_amp, amp_std
 
 
 def analyze(vm, sr, milliseconds):
@@ -50,10 +59,11 @@ def analyze(vm, sr, milliseconds):
     sr_spike_times = sr.events["times"]
     firing_rate = compute_firing_rate(sr_spike_times, milliseconds)
 
-    sto_freq, sto_amp = compute_sto(vm_values, times, sr_spike_times)
+    sto_freq, sto_amp, sto_std = compute_sto(vm_values, times, sr_spike_times)
 
     return [
         round(firing_rate, 2),
         round(sto_freq, 2),
         round(sto_amp, 2),
+        round(sto_std, 2),
     ]

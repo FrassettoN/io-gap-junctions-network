@@ -1,7 +1,7 @@
 import nest
 
 from analyze_simulation import analyze
-from utils import plot_vm
+from utils import plot_vm, plot_sr
 
 from parameters import create_parameters_dict
 
@@ -29,5 +29,6 @@ def simulate(parameters, plot=False):
     results = analyze(vm, sr, milliseconds)
     if plot:
         plot_vm(vm, save=True)
+        plot_sr(sr, save=True)
 
     return results

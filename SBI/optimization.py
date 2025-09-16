@@ -1,26 +1,20 @@
 import numpy as np
 import torch
 from tqdm import tqdm
+import argparse
 
-from sbi import analysis as analysis
-from sbi import utils as utils
-from sbi.inference import NPE, simulate_for_sbi
+from sbi.inference import NPE
 from sbi.utils.user_input_checks import (
-    check_sbi_inputs,
     process_prior,
     process_simulator,
 )
 
 from simulate import simulate
 from parameters import create_priors
+from analyze_optimization import boxplot, corner_plot
 
-if __name__ == "__main__":
-    n_sims = 10000
-    obs_dict = {
-        "firing_rate": 1.0,
-        "STO_fr": 7.0,
-        "STO_amp": 10.0,
-    }
+
+def optimize(n_sims, obs_dict, obs_weights=None):
 
     # CREATE PARAMETERS
     priors = create_priors()
@@ -66,39 +60,68 @@ if __name__ == "__main__":
     obs = torch.tensor(list(obs_dict.values()), dtype=torch.float32)
     posterior_samples = posterior.sample((n_sims,), x=obs)
 
+    # firing_rate, STO_fr, STO_amp, STO_std
+    if obs_weights:
+        weights = torch.tensor(list(obs_weights.values()), dtype=torch.float32)
+    else:
+        weights = torch.ones_like(obs)
+
     distances = []
     sim_results = []
     mses = []
+    weighted_mses = []
 
     for i in indices:
         sim_result = simulate(posterior_samples[i])
         sim_results.append(sim_result)
         error = sim_result - obs.numpy()
+
+        # Standard distance and MSE
         distance = np.linalg.norm(error)
         mse = np.mean(error**2)
 
-        distances.append(distance)
+        # Weighted error calculation
+        weighted_error = error * weights.numpy()
+        weighted_mse = np.mean(weighted_error**2)
+        weighted_distance = np.linalg.norm(weighted_error)
+
+        distances.append(weighted_distance)  # Use weighted distance
         mses.append(mse)
+        weighted_mses.append(weighted_mse)
 
     distances = torch.tensor(distances, dtype=torch.float32)
     sim_results = torch.tensor(sim_results, dtype=torch.float32)
     mses = torch.tensor(mses, dtype=torch.float32)
-    posterior_samples = torch.squeeze(posterior_samples)
+    weighted_mses = torch.tensor(weighted_mses, dtype=torch.float32)
 
-    # Trova il theta con distanza minima
-    print(
-        f"Completed {n_sims} samples. Final result shapes: x_obs = {sim_results.shape} || theta = {posterior_samples.shape}"
-    )
+    # Find best parameters using weighted metrics
+    best_weighted_idx = torch.argmin(weighted_mses)
+    best_theta = posterior_samples[best_weighted_idx]
+    best_sim_output = sim_results[best_weighted_idx]
 
-    best_distance_idx = torch.argmin(distances)
-    best_idx = torch.argmin(mses)
-    print(f"Best index: {best_idx} and posterior samples: {posterior_samples.shape}")
-    print(
-        f"Best distance: {best_distance_idx} and relative theta: {posterior_samples[best_distance_idx]}"
-    )
-    best_theta = posterior_samples[best_idx]
-    best_sim_output = sim_results[best_idx]
-    print("Best Theta:", best_theta)
-    print("Best Output:", best_sim_output)
+    print("Best Theta (weighted):", best_theta)
+    print("Best Output (weighted):", best_sim_output)
+
+    boxplot(sim_results, obs_dict, best_sim_output)
+    corner_plot(posterior_samples, best_theta)
 
     simulate(best_theta, plot=True)
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Neural Parameter Optimization")
+    parser.add_argument(
+        "-n",
+        "--n_sims",
+        type=int,
+        default=10000,
+        help="Number of simulations to run (default: 10000)",
+    )
+    args = parser.parse_args()
+
+    n_sims = args.n_sims
+    print(f"Running optimization with {n_sims} simulations")
+
+    obs_dict = {"firing_rate": 1.0, "STO_fr": 7.0, "STO_amp": 10.0, "STO_std": 0.0}
+    obs_weights = {"firing_rate": 1.0, "STO_fr": 1.0, "STO_amp": 1.0, "STO_std": 1.0}
+    optimize(n_sims, obs_dict)
