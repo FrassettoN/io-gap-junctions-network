@@ -18,16 +18,16 @@ Four neurons in total:
 
 *Validation Method*
 1. Record membrane voltage traces for all four neurons.  
-2. Compare traces programmatically:  
+2. Compare traces:  
 	- Use `np.allclose(trace_a, trace_b, atol=1e-9)`
 3. Validate expected outcomes:  
 	- Coupled neurons (1 & 2): dynamics should reflect electrical coupling.  
-	- Uncoupled neurons (3 & 4): independent evolution, serving as baseline.   
+	- Uncoupled neurons (3 & 4): control   
 4. Spiking Analysis
 
 <div style="page-break-after: always;"></div>
 
-### **Subthreshold Regime without Input**
+### **Subthreshold regime without Input**
 
 <u>AdEx</u>
 ![AdEx voltage trace](./images/AdEx.png)
@@ -49,7 +49,7 @@ V_m of cell 2 and cell 4 are equal: False
 
 <div style="page-break-after: always;"></div>
 
-### **Subthreshold Regime with DC Input on one neuron**
+### **Subthreshold regime with DC Input on one neuron**
 
 DC Input:
 - For the entire simulation
