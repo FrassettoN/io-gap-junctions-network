@@ -30,7 +30,6 @@ Four neurons in total:
 ### **Subthreshold Regime without Input**
 
 <u>AdEx</u>
-Converging traces show correct gap junction behavior.
 ![AdEx voltage trace](./images/AdEx.png)
 Converging traces show correct gap junction behavior.
 ```
