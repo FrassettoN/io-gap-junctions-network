@@ -54,7 +54,6 @@ def analyze(vm, sr, milliseconds):
 
     return [
         round(firing_rate, 2),
-        round(vm_mean, 2),
         round(sto_freq, 2),
         round(sto_amp, 2),
     ]

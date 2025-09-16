@@ -29,22 +29,5 @@ def simulate(parameters, plot=False):
     results = analyze(vm, sr, milliseconds)
     if plot:
         plot_vm(vm, save=True)
+
     return results
-
-
-if __name__ == "__main__":
-    simulate(
-        [
-            207.8396,
-            49.2717,
-            -55.4207,
-            4.2415,
-            19.4002,
-            4.7840,
-            -46.2139,
-            6.1530,
-            81.1153,
-            117.6044,
-        ],
-        plot=True,
-    )

@@ -16,7 +16,11 @@ from parameters import create_priors
 
 if __name__ == "__main__":
     n_sims = 10000
-    obs_dict = {"firing_rate": 1.0, "vm_mean": -55.0, "STO_fr": 7.0, "STO_amp": 10.0}
+    obs_dict = {
+        "firing_rate": 1.0,
+        "STO_fr": 7.0,
+        "STO_amp": 10.0,
+    }
 
     # CREATE PARAMETERS
     priors = create_priors()

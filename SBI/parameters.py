@@ -19,17 +19,20 @@ DEFAULT_PARAMETERS = {
     "tau_w": 144.0,
 }
 
+CONSTANT_PARAMETERS = {
+    "t_ref": 50.0,
+}
+
 PARAMETERS_MIN_MAX = {
     "C_m": [200, 400],
-    "t_ref": [49.0, 51.0],
     "E_L": [-64, -44],
-    "g_L": [0, 100.0],
+    "g_L": [0, 10.0],
     "I_e": [-30, 30],
     "Delta_T": [2.0, 6.0],
     "V_th": [-50, -30],
-    "a": [0, 10.0],
+    "a": [0, 40.0],
     "b": [0, 50],
-    "tau_w": [50, 300],
+    "tau_w": [25, 150],
 }
 
 
@@ -42,6 +45,8 @@ def create_parameters_dict(parameters) -> dict:
         if parameter_name == "E_L":
             parameters_dict["V_m"] = float(parameter)
         parameters_dict[parameter_name] = float(parameter)
+
+    parameters_dict.update(CONSTANT_PARAMETERS)
 
     return parameters_dict
 
