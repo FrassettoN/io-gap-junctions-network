@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
@@ -6,7 +7,7 @@ import corner
 from parameters import PARAMETERS_MIN_MAX
 
 
-def boxplot(sim_results, obs_dict, best_sim_output):
+def boxplot(sim_results, obs_dict, best_sim_output, results_dir=None):
     sim_matrix = np.vstack(sim_results)
     labels = list(obs_dict.keys())
     obs = list(obs_dict.values())
@@ -26,10 +27,16 @@ def boxplot(sim_results, obs_dict, best_sim_output):
     plt.legend()
     plt.grid(True)
     plt.tight_layout()
-    plt.savefig(f"posterior_predictive_check_{sim_matrix.shape[0]}.png")
+
+    if results_dir:
+        filename = os.path.join(results_dir, "posterior_predictive_check.png")
+        plt.savefig(filename, dpi=300, bbox_inches="tight")
+        print(f"Saved boxplot to {filename}")
+
+    plt.close()
 
 
-def corner_plot(posterior_samples, best_theta):
+def corner_plot(posterior_samples, best_theta, results_dir):
     theta_matrix = posterior_samples.numpy()
     print(best_theta)
     corner_labels = list(PARAMETERS_MIN_MAX.keys())
@@ -45,4 +52,9 @@ def corner_plot(posterior_samples, best_theta):
     )
     plt.suptitle("Posterior distribution of θ (corner plot)", fontsize=14)
     plt.tight_layout()
-    fig.savefig(f"posterior_corner_plot_{theta_matrix.shape[0]}.png")
+
+    if results_dir:
+        filename = os.path.join(results_dir, f"posterior_corner_plot.png")
+        fig.savefig(filename, dpi=300, bbox_inches="tight")
+
+    plt.close()

@@ -1,12 +1,12 @@
+import os
 import nest
 
 from analyze_simulation import analyze
 from utils import plot_vm, plot_sr
-
 from parameters import create_parameters_dict
 
 
-def simulate(parameters, plot=False):
+def simulate(parameters, results_dir=None):
     import nest
 
     nest.ResetKernel()
@@ -27,8 +27,11 @@ def simulate(parameters, plot=False):
         print(parameters)
 
     results = analyze(vm, sr, milliseconds)
-    if plot:
-        plot_vm(vm, save=True)
-        plot_sr(sr, save=True)
+    if results_dir:
+        vm_filename = os.path.join(results_dir, f"voltage_trace.png")
+        sr_filename = os.path.join(results_dir, f"raster_plot.png")
+
+        plot_vm(vm, save=True, output=vm_filename)
+        plot_sr(sr, save=True, output=sr_filename)
 
     return results

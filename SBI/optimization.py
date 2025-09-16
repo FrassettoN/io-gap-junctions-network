@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import torch
 from tqdm import tqdm
@@ -12,9 +13,16 @@ from sbi.utils.user_input_checks import (
 from simulate import simulate
 from parameters import create_priors
 from analyze_optimization import boxplot, corner_plot
+from datetime import datetime
 
 
 def optimize(n_sims, obs_dict, obs_weights=None):
+    # Create simulation name with timestamp and key parameters
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    simulation_name = f"n{n_sims}_{timestamp}"
+
+    results_dir = os.path.join("results", simulation_name)
+    os.makedirs(results_dir, exist_ok=True)
 
     # CREATE PARAMETERS
     priors = create_priors()
@@ -43,6 +51,17 @@ def optimize(n_sims, obs_dict, obs_weights=None):
     print(
         f"Completed {n_sims} simulations. Final result shapes: x = {x.shape} || theta = {samples.shape}"
     )
+
+    data_to_save = {
+        "samples": samples,
+        "x": x,
+        "obs_dict": obs_dict,
+        "obs_weights": obs_weights,
+        "n_sims": n_sims,
+        "timestamp": timestamp,
+    }
+
+    torch.save(data_to_save, os.path.join(results_dir, "training_data.pt"))
 
     # RUNNING INFERENCE
     priors, num_parameters, prior_returns_numpy = process_prior(priors)
@@ -102,10 +121,22 @@ def optimize(n_sims, obs_dict, obs_weights=None):
     print("Best Theta (weighted):", best_theta)
     print("Best Output (weighted):", best_sim_output)
 
-    boxplot(sim_results, obs_dict, best_sim_output)
-    corner_plot(posterior_samples, best_theta)
+    posterior_data = {
+        "posterior_samples": posterior_samples,
+        "sim_results": sim_results,
+        "distances": distances,
+        "mses": mses,
+        "weighted_mses": weighted_mses,
+        "best_weighted_idx": best_weighted_idx,
+        "best_theta": best_theta,
+        "best_sim_output": best_sim_output,
+    }
+    torch.save(posterior_data, os.path.join(results_dir, "posterior_analysis.pt"))
 
-    simulate(best_theta, plot=True)
+    boxplot(sim_results, obs_dict, best_sim_output, results_dir)
+    corner_plot(posterior_samples, best_theta, results_dir)
+
+    simulate(best_theta, results_dir)
 
 
 if __name__ == "__main__":
@@ -122,6 +153,6 @@ if __name__ == "__main__":
     n_sims = args.n_sims
     print(f"Running optimization with {n_sims} simulations")
 
-    obs_dict = {"firing_rate": 1.0, "STO_fr": 7.0, "STO_amp": 10.0, "STO_std": 0.0}
-    obs_weights = {"firing_rate": 1.0, "STO_fr": 1.0, "STO_amp": 1.0, "STO_std": 1.0}
+    obs_dict = {"firing_rate": 1.0, "STO_fr": 7.0, "STO_amp": 10.0, "STO_std": 0.5}
+    obs_weights = {"firing_rate": 1.0, "STO_fr": 1.0, "STO_amp": 1.0, "STO_std": 0.5}
     optimize(n_sims, obs_dict)
