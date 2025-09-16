@@ -118,7 +118,7 @@ DC Input:
 V_m of cell 1 and cell 3 are equal: False 
 V_m of cell 2 and cell 4 are equal: False
 ```
-![AdEx raster](AdEx%20-%20spiking%20raster%20first.png)
+![AdEx raster](./images/AdEx%20-%20spiking%20raster%20first.png)
 
 <div style="page-break-after: always;"></div>
 
