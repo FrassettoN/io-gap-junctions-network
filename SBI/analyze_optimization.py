@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 import corner
+from sbi.analysis import pairplot as sbi_pairplot
 
 from parameters import PARAMETERS_MIN_MAX
 
@@ -29,16 +30,14 @@ def boxplot(sim_results, obs_dict, best_sim_output, results_dir=None):
     plt.tight_layout()
 
     if results_dir:
-        filename = os.path.join(results_dir, "posterior_predictive_check.png")
+        filename = os.path.join(results_dir, "boxplot.png")
         plt.savefig(filename, dpi=300, bbox_inches="tight")
-        print(f"Saved boxplot to {filename}")
 
     plt.close()
 
 
 def corner_plot(posterior_samples, best_theta, results_dir):
     theta_matrix = posterior_samples.numpy()
-    print(best_theta)
     corner_labels = list(PARAMETERS_MIN_MAX.keys())
 
     fig = corner.corner(
@@ -54,7 +53,17 @@ def corner_plot(posterior_samples, best_theta, results_dir):
     plt.tight_layout()
 
     if results_dir:
-        filename = os.path.join(results_dir, f"posterior_corner_plot.png")
+        filename = os.path.join(results_dir, f"corner_plot.png")
         fig.savefig(filename, dpi=300, bbox_inches="tight")
 
     plt.close()
+
+
+def pairplot(posterior_samples, results_dir):
+    labels = list(PARAMETERS_MIN_MAX.keys())
+    limits = list(PARAMETERS_MIN_MAX.values())
+    fig, axes = sbi_pairplot(samples=posterior_samples, limits=limits, labels=labels)
+
+    if results_dir:
+        filename = os.path.join(results_dir, f"pairplot.png")
+        fig.savefig(filename, dpi=300, bbox_inches="tight")
