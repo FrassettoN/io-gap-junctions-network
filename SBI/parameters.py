@@ -21,11 +21,13 @@ DEFAULT_PARAMETERS = {
 
 CONSTANT_PARAMETERS = {
     "t_ref": 50.0,
+    "V_reset": -80,
+    "E_L": -54.0,
+    "V_m": -54.0,
 }
 
 PARAMETERS_MIN_MAX = {
     "C_m": [200, 400],
-    "E_L": [-55, -35],
     "g_L": [0, 5.0],
     "I_e": [-30, 30],
     "Delta_T": [4.0, 15.0],
@@ -44,6 +46,8 @@ def create_parameters_dict(parameters) -> dict:
         parameter_name = parameters_names[i]
         if parameter_name == "E_L":
             parameters_dict["V_m"] = float(parameter)
+        if parameter_name == "V_th":
+            parameters_dict["V_peak"] = float(parameter)
         parameters_dict[parameter_name] = float(parameter)
 
     parameters_dict.update(CONSTANT_PARAMETERS)

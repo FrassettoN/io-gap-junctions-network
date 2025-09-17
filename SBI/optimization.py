@@ -12,7 +12,7 @@ from sbi.utils.user_input_checks import (
 
 from simulate import simulate
 from parameters import create_priors
-from analyze_optimization import boxplot, corner_plot
+from analyze_optimization import boxplot, corner_plot, pairplot
 from datetime import datetime
 
 
@@ -78,6 +78,8 @@ def optimize(n_sims, obs_dict, obs_weights=None):
     # POSTERIOR SAMPLING
     obs = torch.tensor(list(obs_dict.values()), dtype=torch.float32)
     posterior_samples = posterior.sample((n_sims,), x=obs)
+
+    pairplot(posterior_samples, results_dir)
 
     # firing_rate, STO_fr, STO_amp, STO_std
     if obs_weights:
@@ -153,6 +155,6 @@ if __name__ == "__main__":
     n_sims = args.n_sims
     print(f"Running optimization with {n_sims} simulations")
 
-    obs_dict = {"firing_rate": 1.0, "STO_fr": 7.0, "STO_amp": 10.0, "STO_std": 0.5}
+    obs_dict = {"firing_rate": 1.0, "STO_fr": 7.0, "STO_amp": 10.0, "STO_std": 0.1}
     obs_weights = {"firing_rate": 1.0, "STO_fr": 1.0, "STO_amp": 1.0, "STO_std": 0.5}
     optimize(n_sims, obs_dict)

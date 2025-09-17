@@ -26,7 +26,7 @@ def simulate(parameters, results_dir=None):
     if len(vm.events["V_m"]) == 0:
         print(parameters)
 
-    results = analyze(vm, sr, milliseconds)
+    results = analyze(vm, sr, milliseconds, V_th=parameters_dict["V_th"])
     if results_dir:
         vm_filename = os.path.join(results_dir, f"voltage_trace.png")
         sr_filename = os.path.join(results_dir, f"raster_plot.png")
