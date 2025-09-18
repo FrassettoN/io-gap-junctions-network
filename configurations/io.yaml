@@ -35,7 +35,7 @@ placement:
 connectivity:
   gap_io:
     strategy: bsb.connectivity.FixedOutdegree
-    outdegree: 0
+    outdegree: 1
     presynaptic:
       cell_types:
         - io
@@ -83,19 +83,13 @@ simulations:
           E_rev2: -80
 
     connection_models:
-      # gap_io:
-      #   synapse:
-      #     model: gap_junction
-      #     weight: 1
-      #     delay: 0.1
-      #   rule: one_to_one
-      #   make_symmetric: True
       gap_io:
         synapse:
-          model: static_synapse
-          weight: 0.25
-          delay: 4.
-          receptor_type: 1
+          model: gap_junction
+          weight: 1
+          delay: 0.1
+        rule: one_to_one
+        make_symmetric: True
     devices:
       background_noise:
         device: dc_generator
