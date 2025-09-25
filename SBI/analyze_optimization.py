@@ -59,10 +59,10 @@ def corner_plot(posterior_samples, best_theta, results_dir):
     plt.close()
 
 
-def pairplot(posterior_samples, results_dir):
+def pairplot(posterior_samples, best_theta, results_dir):
     labels = list(PARAMETERS_MIN_MAX.keys())
     limits = list(PARAMETERS_MIN_MAX.values())
-    fig, axes = sbi_pairplot(samples=posterior_samples, limits=limits, labels=labels)
+    fig, axes = sbi_pairplot(samples=posterior_samples, points=best_theta,limits=limits, labels=labels)
 
     if results_dir:
         filename = os.path.join(results_dir, f"pairplot.png")
