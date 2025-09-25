@@ -42,6 +42,6 @@ def simulate(parameters, results_dir=None):
             or "gsl" in str(e).lower()
             or "integration" in str(e).lower()
         ):
-            sim_result = 0, 0, 0, 0
+            return 0, 0, 0, 0
         else:
             raise  # Re-raise other NEST errors
