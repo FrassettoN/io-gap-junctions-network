@@ -17,24 +17,27 @@ DEFAULT_PARAMETERS = {
     "a": 4.0,
     "b": 80.5,
     "tau_w": 144.0,
+    "gsl_error_tol": 1e-5,
 }
 
 CONSTANT_PARAMETERS = {
     "t_ref": 50.0,
     "V_reset": -80,
-    "E_L": -54.0,
-    "V_m": -54.0,
+    "E_L": -55,
+    "V_m": -55,
+    "V_th": -35,
+    "V_peak": -35,
 }
 
+# USED TO GENERATE PRIORS WITH UNIFORM DISTRIBUTION
 PARAMETERS_MIN_MAX = {
-    "C_m": [200, 400],
-    "g_L": [0, 5.0],
-    "I_e": [-30, 30],
-    "Delta_T": [4.0, 15.0],
-    "V_th": [-50, -30],
-    "a": [10.0, 50.0],
-    "b": [0, 50],
-    "tau_w": [25, 150],
+    "C_m": [0, 500],
+    "g_L": [-10, 10],
+    "I_e": [-500, +500],
+    "Delta_T": [0, 1000],
+    "a": [0, 8000.0],
+    "b": [0, 8000.0],
+    "tau_w": [0, 8000.0],
 }
 
 
