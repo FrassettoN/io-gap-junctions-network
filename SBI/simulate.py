@@ -12,7 +12,8 @@ def simulate(parameters, results_dir=None):
         nest.ResetKernel()
         nest.set_verbosity("M_WARNING")
 
-        neuron = nest.Create("aeif_cond_alpha_multisynapse", 1)
+        nest.Install("nestml_gap_aeif_cond_exp_neuron_module")
+        neuron = nest.Create("aeif_cond_exp_neuron_nestml", 1)
         parameters_dict = create_parameters_dict(parameters)
         neuron.set(parameters_dict)
         vm = nest.Create("voltmeter", params={"interval": 0.1})
