@@ -21,12 +21,11 @@ DEFAULT_PARAMETERS = {
 }
 
 CONSTANT_PARAMETERS = {
-    "t_ref": 50.0,
+    "refr_t": 50.0,
     "V_reset": -80,
     "E_L": -55,
     "V_m": -55,
-    "V_th": -35,
-    "V_peak": -35,
+    "V_peak": -0,
 }
 
 # USED TO GENERATE PRIORS WITH UNIFORM DISTRIBUTION
@@ -36,8 +35,10 @@ PARAMETERS_MIN_MAX = {
     "I_e": [-500, +500],
     "Delta_T": [0, 1000],
     "a": [0, 8000.0],
-    "b": [0, 8000.0],
+    "b": [0, 100.0],
     "tau_w": [0, 8000.0],
+    "V_th": [-55, -50],
+    "V_peak": [-50, 0],
 }
 
 
@@ -45,15 +46,14 @@ def create_parameters_dict(parameters) -> dict:
     parameters_names = list(PARAMETERS_MIN_MAX.keys())
 
     parameters_dict = {}
+    parameters_dict.update(CONSTANT_PARAMETERS)
     for i, parameter in enumerate(parameters):
         parameter_name = parameters_names[i]
         if parameter_name == "E_L":
             parameters_dict["V_m"] = float(parameter)
-        if parameter_name == "V_th":
-            parameters_dict["V_peak"] = float(parameter)
+        # if parameter_name == "V_th":
+        #     parameters_dict["V_peak"] = float(parameter)
         parameters_dict[parameter_name] = float(parameter)
-
-    parameters_dict.update(CONSTANT_PARAMETERS)
 
     return parameters_dict
 

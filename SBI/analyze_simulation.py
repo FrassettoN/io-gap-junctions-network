@@ -5,7 +5,33 @@ import scipy.signal as signal
 
 def compute_firing_rate(spike_times, milliseconds):
     seconds = milliseconds / 1000.0
+
     return len(spike_times) / seconds
+
+
+def compute_isi(spike_times):
+    """
+    Compute Inter-Spike Interval statistics.
+
+    Parameters:
+    -----------
+    spike_times : array-like
+        Array of spike times in milliseconds
+
+    Returns:
+    --------
+        - mean_isi: Mean inter-spike interval in ms
+
+    """
+    if len(spike_times) < 2:
+        return 0.0
+
+    # Calculate intervals between consecutive spikes
+    intervals = np.diff(spike_times)
+
+    mean_isi = np.mean(intervals)
+
+    return mean_isi
 
 
 def compute_sto(v_m, t, milliseconds, V_th, spike_times=None, min_amplitude=0.01):
@@ -77,7 +103,7 @@ def compute_sto(v_m, t, milliseconds, V_th, spike_times=None, min_amplitude=0.01
             )
             valid_seconds = valid_milliseconds / 1000.0
             if valid_seconds == 0:
-                return
+                return 0, 0, 0
 
             sto_freq = len(valid_amplitudes) / valid_seconds
 
@@ -129,6 +155,7 @@ def analyze(vm, sr, milliseconds, V_th):
 
     sr_spike_times = sr.events["times"]
     firing_rate = compute_firing_rate(sr_spike_times, milliseconds)
+    mean_isi = compute_isi(sr_spike_times)
 
     sto_freq, sto_amp, sto_growth = compute_sto(
         vm_values, times, milliseconds, V_th, sr_spike_times
@@ -136,7 +163,8 @@ def analyze(vm, sr, milliseconds, V_th):
 
     return [
         round(firing_rate, 3),
-        round(sto_freq, 3),
-        round(sto_amp, 3),
-        round(sto_growth, 3),
+        round(mean_isi, 3),
+        # round(sto_freq, 3),
+        # round(sto_amp, 3),
+        # round(sto_growth, 3),
     ]

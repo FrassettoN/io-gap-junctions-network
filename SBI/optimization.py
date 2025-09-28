@@ -16,6 +16,7 @@ from simulate import simulate
 from parameters import create_priors
 from analyze_optimization import boxplot, corner_plot, pairplot
 from load import load_training_data
+from network import simulate_network
 
 
 def optimize(n_sims, obs_dict, obs_weights=None, samples=None, x=None):
@@ -91,6 +92,8 @@ def optimize(n_sims, obs_dict, obs_weights=None, samples=None, x=None):
     mses = []
     weighted_mses = []
 
+    pbar = tqdm(total=n_sims, desc="Posterior simulations")
+
     for i in indices:
         sim_result = simulate(posterior_samples[i])
         sim_results.append(sim_result)
@@ -108,6 +111,11 @@ def optimize(n_sims, obs_dict, obs_weights=None, samples=None, x=None):
         distances.append(weighted_distance)  # Use weighted distance
         mses.append(mse)
         weighted_mses.append(weighted_mse)
+
+        if i % max(1, len(indices) // 10) == 0:
+            pbar.update(max(1, len(indices) // 10))
+
+    pbar.close()
 
     distances = torch.tensor(distances, dtype=torch.float32)
     sim_results = torch.tensor(sim_results, dtype=torch.float32)
@@ -134,11 +142,15 @@ def optimize(n_sims, obs_dict, obs_weights=None, samples=None, x=None):
     }
     torch.save(posterior_data, os.path.join(results_dir, "posterior_analysis.pt"))
 
+    print("Plotting...")
     pairplot(posterior_samples, best_theta, results_dir)
     boxplot(sim_results, obs_dict, best_sim_output, results_dir)
     corner_plot(posterior_samples, best_theta, results_dir)
 
+    print("Simulating single neuron...")
     simulate(best_theta, results_dir)
+    print("Simulating network with gap junctions...")
+    simulate_network(best_theta, results_dir)
 
 
 if __name__ == "__main__":
@@ -172,15 +184,17 @@ if __name__ == "__main__":
 
     obs_dict = {
         "firing_rate": 1,
-        "STO_fr": 5.0,
-        "STO_amp": 9.5,
-        "STO_growth": 0.2,
+        "mean_isi": 1000,
+        # "STO_fr": 0,
+        # "STO_amp": 0,
+        # "STO_growth": 0,
     }
     obs_weights = {
-        "firing_rate": 0.0,
-        "STO_fr": 1.0,
-        "STO_amp": 1.0,
-        "STO_growth": 2.0,
+        "firing_rate": 1.0,
+        "mean_isi": 1.0,
+        # "STO_fr": 1.0,
+        # "STO_amp": 1.0,
+        # "STO_growth": 1.0,
     }
 
     optimize(n_sims, obs_dict, obs_weights=obs_weights, samples=samples, x=x)
