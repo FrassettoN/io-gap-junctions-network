@@ -185,16 +185,14 @@ if __name__ == "__main__":
     obs_dict = {
         "firing_rate": 1,
         "mean_isi": 1000,
-        # "STO_fr": 0,
-        # "STO_amp": 0,
-        # "STO_growth": 0,
+        "STO_fr": 5,
+        "STO_amp": 9.5,
     }
     obs_weights = {
         "firing_rate": 1.0,
         "mean_isi": 1.0,
-        # "STO_fr": 1.0,
-        # "STO_amp": 1.0,
-        # "STO_growth": 1.0,
+        "STO_fr": 1.0,
+        "STO_amp": 1.0,
     }
 
     optimize(n_sims, obs_dict, obs_weights=obs_weights, samples=samples, x=x)

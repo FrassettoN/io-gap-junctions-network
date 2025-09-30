@@ -1,5 +1,6 @@
 import os
 import nest
+from scipy.signal import find_peaks
 
 from analyze_simulation import analyze
 from utils import plot_vm, plot_sr
@@ -24,10 +25,7 @@ def simulate(parameters, results_dir=None):
         milliseconds = 5000.0
         nest.Simulate(milliseconds)
 
-        if len(vm.events["V_m"]) == 0:
-            print(parameters)
-
-        results = analyze(vm, sr, milliseconds, V_th=parameters_dict["V_th"])
+        results = analyze(vm, sr, milliseconds)
         if results_dir:
             vm_filename = os.path.join(results_dir, f"voltage_trace.png")
             sr_filename = os.path.join(results_dir, f"raster_plot.png")
@@ -46,3 +44,18 @@ def simulate(parameters, results_dir=None):
             return 0, 0, 0, 0
         else:
             raise  # Re-raise other NEST errors
+
+
+if __name__ == "__main__":
+    parameters = [
+        392.3333,
+        8.3086,
+        196.1904,
+        39.2753,
+        2585.6672,
+        55.0733,
+        4851.5903,
+        -53.8297,
+        -12.0876,
+    ]
+    results = simulate(parameters, "./")
