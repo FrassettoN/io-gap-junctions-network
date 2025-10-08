@@ -9,7 +9,6 @@ from parameters import create_parameters_dict
 
 def simulate(parameters, results_dir=None):
     try:
-
         nest.ResetKernel()
         nest.set_verbosity("M_WARNING")
 
@@ -41,21 +40,6 @@ def simulate(parameters, results_dir=None):
             or "gsl" in str(e).lower()
             or "integration" in str(e).lower()
         ):
-            return 0, 0, 0, 0
+            return (0, 0, 0, 0)
         else:
             raise  # Re-raise other NEST errors
-
-
-if __name__ == "__main__":
-    parameters = [
-        392.3333,
-        8.3086,
-        196.1904,
-        39.2753,
-        2585.6672,
-        55.0733,
-        4851.5903,
-        -53.8297,
-        -12.0876,
-    ]
-    results = simulate(parameters, "./")

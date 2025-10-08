@@ -21,24 +21,25 @@ DEFAULT_PARAMETERS = {
 }
 
 CONSTANT_PARAMETERS = {
-    "refr_t": 50.0,
+    "refr_T": 50.0,
     "V_reset": -80,
     "E_L": -55,
     "V_m": -55,
-    "V_peak": -0,
+    "V_peak": -20,
+    # "V_peak": 0,
+    # "V_th": -50,
 }
 
 # USED TO GENERATE PRIORS WITH UNIFORM DISTRIBUTION
 PARAMETERS_MIN_MAX = {
     "C_m": [0, 500],
     "g_L": [-10, 10],
-    "I_e": [-500, +500],
+    "I_e": [-250, +250],
     "Delta_T": [0, 50],
-    "a": [0, 8000.0],
+    "a": [0, 10_000.0],
     "b": [0, 100.0],
-    "tau_w": [0, 8000.0],
-    "V_th": [-55, -50],
-    "V_peak": [-50, 0],
+    "tau_w": [0, 10_000.0],
+    "V_th": [-60, -35],
 }
 
 

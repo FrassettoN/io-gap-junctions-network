@@ -4,8 +4,6 @@ import torch
 
 def load_training_data(results_dir):
     """Load saved training data and priors"""
-    import pickle
-
     # Load training data
     data = torch.load(os.path.join(results_dir, "training_data.pt"))
     samples = data["samples"]

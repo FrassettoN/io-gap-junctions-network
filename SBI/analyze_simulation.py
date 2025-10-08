@@ -10,19 +10,6 @@ def compute_firing_rate(spike_times, milliseconds):
 
 
 def compute_isi(spike_times):
-    """
-    Compute Inter-Spike Interval statistics.
-
-    Parameters:
-    -----------
-    spike_times : array-like
-        Array of spike times in milliseconds
-
-    Returns:
-    --------
-        - mean_isi: Mean inter-spike interval in ms
-
-    """
     if len(spike_times) < 2:
         return 0.0
 
@@ -113,7 +100,7 @@ def inter_spike_subthreshold(v_m, min_amplitude=0.01):
     return []
 
 
-def compute_sto(v_m, t, milliseconds, spike_times):
+def compute_sto(v_m, t, spike_times):
     intervals = get_inter_spike_intervals(v_m, t, spike_times)
     oscillations = []
 
@@ -127,17 +114,19 @@ def compute_sto(v_m, t, milliseconds, spike_times):
 
     # Handle empty oscillations array
     if len(oscillations) > 0:
-        sto_amp = np.mean(oscillations)
         sto_freq = (
             len(oscillations) / no_spike_time_seconds
             if no_spike_time_seconds > 0
             else 0
         )
+        sto_amp = np.mean(oscillations)
+        sto_std = np.std(oscillations)
     else:
-        sto_amp = 0
         sto_freq = 0
+        sto_amp = 0
+        sto_std = 0
 
-    return sto_freq, sto_amp
+    return sto_freq, sto_amp, sto_std
 
 
 def analyze(vm, sr, milliseconds):
@@ -148,11 +137,11 @@ def analyze(vm, sr, milliseconds):
     firing_rate = compute_firing_rate(sr_spike_times, milliseconds)
     mean_isi = compute_isi(sr_spike_times)
 
-    sto_freq, sto_amp = compute_sto(vm_values, times, milliseconds, sr_spike_times)
+    sto_freq, sto_amp, sto_std = compute_sto(vm_values, times, sr_spike_times)
 
     return [
         round(firing_rate, 3),
         round(mean_isi, 3),
-        round(sto_freq, 3),
         round(sto_amp, 3),
+        round(sto_freq, 3),
     ]
