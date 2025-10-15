@@ -1,8 +1,19 @@
 import nest
 import os
 from pynestml.frontend.pynestml_frontend import generate_nest_target
-from parameters import create_parameters_dict
 from utils import plot_vm
+
+# Configuration constants
+SIMULATION_CONFIG = {
+    "adex": {
+        "module": "nestml_gap_aeif_cond_exp_neuron_module",
+        "model": "aeif_cond_exp_neuron_nestml",
+    },
+    "eglif": {
+        "module": "nestml_gap_eglif_multirec_opt_module",
+        "model": "eglif_multirec_opt_nestml",
+    },
+}
 
 
 def generate_code(neuron_model: str, models_path=""):
@@ -37,26 +48,45 @@ def generate_code(neuron_model: str, models_path=""):
     return neuron_model
 
 
-def initialize_aeif(parameters_dict={}):
-    nest.Install("nestml_gap_aeif_cond_exp_neuron_module")
-    neurons = nest.Create("aeif_cond_exp_neuron_nestml", 2)
+def initialize_adex(parameters_dict={}):
+    config = SIMULATION_CONFIG["adex"]
+    nest.Install(config["module"])
+    neurons = nest.Create(config["model"], 2)
     neurons.set(parameters_dict)
     neurons[0].V_m = neurons[0].V_m - 2
 
     return neurons
 
 
-def simulate_network(parameters=[], results_dir=None):
+def initialize_eglif(parameters_dict={}):
+    config = SIMULATION_CONFIG["eglif"]
+    nest.Install(config["module"])
+    neurons = nest.Create(config["model"], 2)
+    neurons.set(parameters_dict)
+    neurons[0].V_m = neurons[0].V_m - 2
+
+    return neurons
+
+
+def simulate_network(model, parameters=[], results_dir=None):
     nest.ResetKernel()
     # generate_code(neuron_model="aeif_cond_alpha_neuron", models_path="../nest_models/")
 
     nest.resolution = 0.05
 
-    # Change t_ref to refr_t to match NESTML model
-    parameters_dict = create_parameters_dict(parameters)
-    if "t_ref" in parameters_dict:
-        parameters_dict["refr_t"] = parameters_dict.pop("t_ref")
-    neurons = initialize_aeif(parameters_dict)
+    if model == "eglif":
+        from eglif import create_parameters_dict
+
+        parameters_dict = create_parameters_dict(parameters)
+        neurons = initialize_eglif(parameters_dict)
+    elif model == "adex":
+        from adex import create_parameters_dict
+
+        # Change t_ref to refr_t to match NESTML model
+        parameters_dict = create_parameters_dict(parameters)
+        if "T_ref" in parameters_dict:
+            parameters_dict["refr_t"] = parameters_dict.pop("T_ref")
+        neurons = initialize_adex(parameters_dict)
 
     # GAP CONNECTION
     nest.Connect(

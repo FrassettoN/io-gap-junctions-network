@@ -5,10 +5,13 @@ import matplotlib.pyplot as plt
 import corner
 from sbi.analysis import pairplot as sbi_pairplot
 
-from parameters import PARAMETERS_MIN_MAX
 
+def boxplot(model, sim_results, obs_dict, best_sim_output, results_dir=None):
+    if model == "eglif":
+        from eglif import PARAMETERS_MIN_MAX
+    elif model == "adex":
+        from adex import PARAMETERS_MIN_MAX
 
-def boxplot(sim_results, obs_dict, best_sim_output, results_dir=None):
     sim_matrix = np.vstack(sim_results)
     labels = list(obs_dict.keys())
     obs = list(obs_dict.values())
@@ -36,7 +39,12 @@ def boxplot(sim_results, obs_dict, best_sim_output, results_dir=None):
     plt.close()
 
 
-def corner_plot(posterior_samples, best_theta, results_dir):
+def corner_plot(model, posterior_samples, best_theta, results_dir):
+    if model == "eglif":
+        from eglif import PARAMETERS_MIN_MAX
+    elif model == "adex":
+        from adex import PARAMETERS_MIN_MAX
+
     theta_matrix = posterior_samples.numpy()
     corner_labels = list(PARAMETERS_MIN_MAX.keys())
 
@@ -59,10 +67,17 @@ def corner_plot(posterior_samples, best_theta, results_dir):
     plt.close()
 
 
-def pairplot(posterior_samples, best_theta, results_dir):
+def pairplot(model, posterior_samples, best_theta, results_dir):
+    if model == "eglif":
+        from eglif import PARAMETERS_MIN_MAX
+    elif model == "adex":
+        from adex import PARAMETERS_MIN_MAX
+
     labels = list(PARAMETERS_MIN_MAX.keys())
     limits = list(PARAMETERS_MIN_MAX.values())
-    fig, axes = sbi_pairplot(samples=posterior_samples, points=best_theta,limits=limits, labels=labels)
+    fig, axes = sbi_pairplot(
+        samples=posterior_samples, points=best_theta, limits=limits, labels=labels
+    )
 
     if results_dir:
         filename = os.path.join(results_dir, f"pairplot.png")
