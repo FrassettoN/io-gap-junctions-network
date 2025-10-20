@@ -12,7 +12,12 @@ from sbi.utils.user_input_checks import (
 )
 
 from simulate import simulate_adex, simulate_eglif
-from analyze_optimization import boxplot, corner_plot, pairplot
+from analyze_optimization import (
+    process_posterior_samples_with_normalization,
+    boxplot,
+    corner_plot,
+    pairplot,
+)
 from save_data import load_training_data, save_optimization_recap
 from network import simulate_network
 from inference import (
@@ -105,48 +110,14 @@ def optimize(
         if i % max(1, len(posterior_samples) // 20) == 0:
             pbar.update(max(1, len(posterior_samples) // 20))
 
-    # Calculate min-max normalization statistics
-    sim_results = np.array(sim_results)
-    sim_min = np.min(sim_results, axis=0)
-    sim_max = np.max(sim_results, axis=0)
-    sim_range = sim_max - sim_min
-    sim_range = np.where(sim_range == 0, 1, sim_range)  # Avoid division by zero
-
-    # Normalize scalar observations to [0, 1] range
-    obs_normalized = (obs.numpy() - sim_min) / sim_range
-    obs_normalized = np.clip(obs_normalized, 0, 1)  # Ensure within [0, 1]
-
-    pbar.set_description("Processing results with min-max normalization")
-
-    for i in range(len(posterior_samples)):
-        sim_result = sim_results[i]
-
-        # Min-max normalized error calculation
-        sim_normalized = (sim_result - sim_min) / sim_range
-        sim_normalized = np.clip(sim_normalized, 0, 1)  # Ensure within [0, 1]
-        normalized_error = sim_normalized - obs_normalized
-        normalized_distance = np.linalg.norm(normalized_error)
-
-        # Weighted error calculation (on normalized data)
-        weighted_error = normalized_error * weights.numpy()
-        weighted_mse = np.mean(weighted_error**2)
-        weighted_distance = np.linalg.norm(weighted_error)
-
-        distances.append(weighted_distance)  # Use weighted distance on normalized data
-        normalized_distances.append(normalized_distance)
-        weighted_mses.append(weighted_mse)
-
-        if i % max(1, len(posterior_samples) // 10) == 0:
-            pbar.update(max(1, len(posterior_samples) // 10))
-
     pbar.close()
 
-    distances = torch.tensor(np.array(distances), dtype=torch.float32)
-    sim_results = torch.tensor(sim_results, dtype=torch.float32)
-    weighted_mses = torch.tensor(np.array(weighted_mses), dtype=torch.float32)
+    distances, sim_results, weighted_mses, best_weighted_idx = (
+        process_posterior_samples_with_normalization(
+            posterior_samples, sim_results, obs, weights
+        )
+    )
 
-    # Find best parameters using weighted metrics
-    best_weighted_idx = torch.argmin(weighted_mses)
     best_theta = posterior_samples[best_weighted_idx]
     best_sim_output = sim_results[best_weighted_idx]
     best_theta_dict = create_parameters_dict(best_theta)

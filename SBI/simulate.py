@@ -18,7 +18,7 @@ SIMULATION_CONFIG = {
 }
 
 
-def _run_simulation(model_type, parameters, results_dir=None):
+def run_simulation(model_type, parameters, results_dir=None):
     """Core simulation logic shared between models."""
     # Import model-specific function
     if model_type == "adex":
@@ -47,15 +47,6 @@ def _run_simulation(model_type, parameters, results_dir=None):
     nest.Connect(vm, neuron)
     nest.Connect(neuron, sr)
 
-    # start = 800
-    # duration = 200
-    # amplitude = -5
-    # dc = nest.Create(
-    #     "dc_generator",
-    #     params={"amplitude": amplitude, "start": start, "stop": start + duration},
-    # )
-    # nest.Connect(dc, neuron, syn_spec={"weight": 1.0})
-
     # Run simulation
     simulation_time = 5000.0
     nest.Simulate(simulation_time)
@@ -65,7 +56,7 @@ def _run_simulation(model_type, parameters, results_dir=None):
 
     # Save plots if directory provided and results exist
     if results_dir and results:
-        _save_simulation_plots(vm, sr, results_dir, model_type)
+        save_simulation_plots(vm, sr, results_dir, model_type)
 
     return results
 
@@ -73,17 +64,17 @@ def _run_simulation(model_type, parameters, results_dir=None):
 def simulate_adex(parameters, results_dir=None):
     """Simulate AdEx neuron model."""
     try:
-        return _run_simulation("adex", parameters, results_dir)
+        return run_simulation("adex", parameters, results_dir)
     except nest.kernel.NESTError as e:
-        return _handle_nest_error(e)
+        return handle_nest_error(e)
 
 
 def simulate_eglif(parameters, results_dir=None):
     """Simulate EGLIF neuron model."""
     try:
-        return _run_simulation("eglif", parameters, results_dir)
+        return run_simulation("eglif", parameters, results_dir)
     except nest.kernel.NESTError as e:
-        return _handle_nest_error(e)
+        return handle_nest_error(e)
 
 
 def simulate(parameters, results_dir=None, model="adex"):
@@ -96,7 +87,7 @@ def simulate(parameters, results_dir=None, model="adex"):
         raise ValueError(f"Unknown model: {model}")
 
 
-def _save_simulation_plots(vm, sr, results_dir, model_name):
+def save_simulation_plots(vm, sr, results_dir, model_name):
     """Save voltage and spike plots to results directory."""
     try:
         vm_filename = os.path.join(results_dir, f"voltage_trace.png")
@@ -108,7 +99,7 @@ def _save_simulation_plots(vm, sr, results_dir, model_name):
         print(f"Warning: Could not save plots: {e}")
 
 
-def _handle_nest_error(e):
+def handle_nest_error(e):
     """Handle NEST simulation errors gracefully."""
     error_msg = str(e).lower()
     if any(keyword in error_msg for keyword in ["numerical", "gsl", "integration"]):
@@ -127,16 +118,15 @@ if __name__ == "__main__":
         2.6531e00,
         5.1926e-01,
         9.4476e-02,
-        -3.3671e01,
+        -4.8671e01,
         9.9121e-01,
         7.3815e-01,
         1.6394e03,
         1.9759e03,
     ]
-    simulate(
+    results = simulate(
         parameters,
         "./",
         model="eglif",
     )
-    # results = simulate(parameters, "./", model="adex")  # Use generic function
-    # print(results)
+    print(results)
