@@ -90,7 +90,7 @@ def inter_spike_subthreshold(v_m, min_amplitude=0.01):
         peaks_values = peaks_values[:min_len]
         troughs_values = troughs_values[:min_len]
 
-        amplitudes = np.abs(peaks_values - troughs_values) / 2
+        amplitudes = np.abs(peaks_values - troughs_values)
         valid_idx = amplitudes >= min_amplitude
 
         if np.any(valid_idx):
