@@ -24,10 +24,10 @@ DEFAULT_PARAMETERS = {
 
 CONSTANT_PARAMETERS = {
     "refr_T": 50.0,
-    "V_reset": -55,
-    "E_L": -55,
+    "V_reset": -45,
+    "E_L": -45,
     "Delta_T": 2,
-    "V_m": -55,
+    "V_m": -45,
     "V_peak": -45,
 }
 
@@ -39,7 +39,7 @@ PARAMETERS_MIN_MAX = {
     "a": [0, 1000.0],
     "b": [0, 300.0],
     "tau_w": [0, 1000.0],
-    "V_th": [-54, -45],
+    "V_th": [-40, -35],
 }
 
 
@@ -55,15 +55,6 @@ def create_parameters_dict(parameters) -> dict:
         parameters_dict[parameter_name] = float(parameter)
 
     return parameters_dict
-
-
-# def create_priors():
-#     priors_min, priors_max = zip(*PARAMETERS_MIN_MAX.values())
-#     priors = sbi_utils.torchutils.BoxUniform(
-#         low=torch.tensor(priors_min, dtype=torch.float32),
-#         high=torch.tensor(priors_max, dtype=torch.float32),
-#     )
-#     return priors
 
 
 class ConstrainedPrior(Distribution):
@@ -114,7 +105,7 @@ def constraint_function(parameters):
     a = parameters[..., a_idx]
     tau_w = parameters[..., tau_w_idx]
 
-    return a > 0
+    return a / g_L > (C_m / g_L) / tau_w
 
 
 def create_priors():

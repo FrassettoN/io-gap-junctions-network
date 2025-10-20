@@ -2,11 +2,10 @@ from sbi import utils as sbi_utils
 import torch
 
 CONSTANT_PARAMETERS = {
-    "E_L": -45,
+    "E_L": -55,
     "t_ref": 50.0,
-    "V_m": -45,
-    "V_reset": -45,
-    "V_th": -30,
+    "V_m": -55,
+    "V_reset": -55,
 }
 
 # USED TO GENERATE PRIORS WITH UNIFORM DISTRIBUTION
@@ -17,9 +16,8 @@ PARAMETERS_MIN_MAX = {
     "k_adap": [0, 5],
     "k_1": [0, 1],
     "k_2": [0, 1],
-    "V_th": [-40, -30],
+    "V_th": [-50, -40],
     "tau_V": [0, 2],
-    "lambda_0": [0, 2],
     "A1": [0, 2500],
     "A2": [0, 2500],
 }
@@ -34,8 +32,6 @@ def create_parameters_dict(parameters) -> dict:
         parameter_name = parameters_names[i]
         if parameter_name == "E_L":
             parameters_dict["V_m"] = float(parameter)
-        # if parameter_name == "V_th":
-        #     parameters_dict["V_peak"] = float(parameter)
         parameters_dict[parameter_name] = float(parameter)
 
     return parameters_dict
