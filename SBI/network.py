@@ -70,7 +70,7 @@ def initialize_eglif(parameters_dict={}):
 
 def simulate_network(model, parameters=[], results_dir=None):
     nest.ResetKernel()
-    # generate_code(neuron_model="aeif_cond_alpha_neuron", models_path="../nest_models/")
+    # generate_code(neuron_model="eglif_multirec_opt", models_path="../nest_models/")
 
     nest.resolution = 0.05
 
@@ -111,7 +111,3 @@ def simulate_network(model, parameters=[], results_dir=None):
     if results_dir:
         vm_filename = os.path.join(results_dir, f"gap_trace.png")
         plot_vm(vm, save=True, output=vm_filename)
-
-
-if __name__ == "__main__":
-    simulate_network(parameters=[], results_dir="./")
