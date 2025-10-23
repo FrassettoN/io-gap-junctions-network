@@ -51,30 +51,22 @@ simulations:
       - iomodule
     cell_models:
       io:
-        model: eglif_cond_alpha_multisyn
+        model: eglif_cond_alpha_multisyn_mod
         constants:
-          # Membrane Potential
-          V_m: -45
-          E_L: -45
-          C_m: 189
-          tau_m: 11
-          I_e: -18.101
-          k_adap: 1.928
-          k_1: 0.191
-          # k_2: 0.091
-          k_2: 0.090909
-
-          # V Threshold, Refractory Period and Escape rate
-          V_th: -35
-          t_ref: 1
-          tau_V: 0.8
-          lambda_0: 1.2
-
-          # Reset on Spike
-          V_reset: -45
-          A1: 1810.923
-          A2: 1358.197
-
+          E_L: -55
+          t_ref: 50.0
+          V_m: -55
+          V_reset: -55
+          C_m: 292.5655822753906
+          tau_m: 10.405184745788574
+          I_e: 11.013994216918945
+          k_adap: 2.9717917442321777
+          k_1: 0.5179843306541443
+          k_2: 0.09520511329174042
+          V_th: -46.31399154663086
+          A1: 1239.3447265625
+          A2: 2395.549072265625
+          
           # Postsynaptic receptor
           tau_syn1: 1
           tau_syn2: 60
@@ -83,9 +75,9 @@ simulations:
 
     connection_models:
       gap_io:
-        synapse:
-          model: gap_junction
-          weight: 1
+        synapses:
+          - model: gap_junction
+            weight: 1  # careful with the indentation here, same as `model`
         rule: one_to_one
         make_symmetric: True
         
@@ -93,10 +85,10 @@ simulations:
       background_noise:
         device: poisson_generator
         rate: 15
-        weight: 1
+        weight: 100
         receptor_type: 1
         start: 500.0
-        stop: 550.0
+        stop: 1000.0
         delay: 0.1
         targetting:
           strategy: by_id

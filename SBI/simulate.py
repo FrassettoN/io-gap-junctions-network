@@ -12,8 +12,8 @@ SIMULATION_CONFIG = {
         "model": "aeif_cond_exp_neuron_nestml",
     },
     "eglif": {
-        "module": "nestml_gap_eglif_multirec_opt_module",
-        "model": "eglif_multirec_opt_nestml",
+        "module": "nestml_gap_eglif_cond_alpha_multisyn_mod_module",
+        "model": "eglif_cond_alpha_multisyn_mod_nestml",
     },
 }
 
@@ -56,7 +56,7 @@ def run_simulation(model_type, parameters, results_dir=None):
 
     # Save plots if directory provided and results exist
     if results_dir and results:
-        save_simulation_plots(vm, sr, results_dir, model_type)
+        save_simulation_plots(vm, sr, results_dir)
 
     return results
 
@@ -87,7 +87,7 @@ def simulate(parameters, results_dir=None, model="adex"):
         raise ValueError(f"Unknown model: {model}")
 
 
-def save_simulation_plots(vm, sr, results_dir, model_name):
+def save_simulation_plots(vm, sr, results_dir):
     """Save voltage and spike plots to results directory."""
     try:
         vm_filename = os.path.join(results_dir, f"voltage_trace.png")
