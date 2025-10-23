@@ -34,8 +34,7 @@ placement:
       - io
 connectivity:
   gap_io:
-    strategy: bsb.connectivity.FixedOutdegree
-    outdegree: 1
+    strategy: bsb.connectivity.AllToAll
     presynaptic:
       cell_types:
         - io
@@ -87,28 +86,24 @@ simulations:
         synapse:
           model: gap_junction
           weight: 1
-          delay: 0.1
         rule: one_to_one
         make_symmetric: True
+        
     devices:
       background_noise:
-        device: dc_generator
-        amplitude: 20
+        device: poisson_generator
+        rate: 15
         weight: 1
-
-        # device: poisson_generator
-        # rate: 40
-        # weight: 3
-        # receptor_type: 4
+        receptor_type: 1
         start: 500.0
         stop: 550.0
         delay: 0.1
-
         targetting:
           strategy: by_id
           ids:
             io:
               - 1
+
       io_record:
         device: spike_recorder
         delay: 0.1
@@ -116,6 +111,7 @@ simulations:
           strategy: cell_model
           cell_models:
             - io
+            
       io_Vm_record:
         device: multimeter
         delay: 0.1
