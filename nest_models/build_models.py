@@ -13,7 +13,7 @@ _cache_path = _cereb_dirs.user_cache_dir
 def _build_nest_models(
     model_dir=dirname(__file__),
     build_dir=join(_cache_path, "nest_build"),
-    module_name="iomodule",
+    module_name="gap_io_module",
     redo=False,
 ):
     """
