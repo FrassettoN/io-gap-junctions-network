@@ -9,3 +9,5 @@ SBI/sbi-logs
 SBI/good_params.txt
 SBI/*.png
 SBI/results
+SBI/tests
+SBI/test_model.py
