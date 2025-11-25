@@ -12,17 +12,17 @@ network:
   z: 50
 regions:
   inferior_olivary:
-    type: group
     children:
-      - io_layer
+    - io_layer
+    type: group
 partitions:
   io_layer:
-    thickness: 50
+    thickness: 150
 cell_types:
   io:
     spatial:
-      radius: 7.5
       density: 3.9e-5
+      radius: 7.5
     plotting:
       display_name: Inferior olivary cells
 placement:
@@ -44,32 +44,35 @@ connectivity:
 
 simulations:
   basal_activity:
+    seed: 1234
     simulator: nest
     resolution: 0.1
     duration: 5000
     modules:
-      - iomodule
+      - gap_io_module
     cell_models:
       io:
         model: eglif_cond_alpha_multisyn_mod
         constants:
-          E_L: -55
-          t_ref: 50.0
-          V_m: -55
-          V_reset: -55
-          C_m: 292.5655822753906
-          tau_m: 10.405184745788574
-          I_e: 11.013994216918945
-          k_adap: 2.9717917442321777
-          k_1: 0.5179843306541443
-          k_2: 0.09520511329174042
-          V_th: -46.31399154663086
-          A1: 1239.3447265625
-          A2: 2395.549072265625
-          
-          # Postsynaptic receptor
+          A1 : 1810.923
+          A2 : 1358.197
+          C_m : 189
+          E_L : -45
+          I_e : -18.101
+          V_m : -45
+          V_reset : -45
+          V_th : -35
+          k_1 : 0.191
+          k_2 : 0.091
+          k_adap : 1.928
+          t_ref : 1
+          tau_m : 11
+          E_rev1: 0
+          E_rev2: -80
           tau_syn1: 1
           tau_syn2: 60
+          # tau_syn1: 1
+          # tau_syn2: 60
           E_rev1: 0
           E_rev2: -80
 
@@ -77,24 +80,23 @@ simulations:
       gap_io:
         synapses:
           - model: gap_junction
-            weight: 1  # careful with the indentation here, same as `model`
+            weight: 4
         rule: one_to_one
         make_symmetric: True
         
     devices:
-      background_noise:
-        device: poisson_generator
-        rate: 15
-        weight: 100
-        receptor_type: 1
-        start: 500.0
-        stop: 1000.0
+      cf_stimulus:
         delay: 0.1
+        device: poisson_generator
+        rate: 0
+        receptor_type: 1
+        start: 0
+        stop: 500.0
         targetting:
-          strategy: by_id
-          ids:
-            io:
-              - 1
+          strategy: cell_model
+          cell_models:
+          - io
+        weight: 50
 
       io_record:
         device: spike_recorder
