@@ -104,7 +104,6 @@ V_m of cell 2 and cell 4 are equal: True
 ```
 
 EGLIF Voltage Trace
-![EGLIF voltage trace](./images/EGLIF.png)
 Overlapping traces show no coupling
 
 #### **Results for ```aeif_cond_exp``` and ```hh_psc_alpha```** 
