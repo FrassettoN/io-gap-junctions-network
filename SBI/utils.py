@@ -35,6 +35,7 @@ def plot_vm(vm, spikes=[], peaks=[], show=False, save=False, output="V_m.png"):
         plt.show()
     if save:
         plt.savefig(output)
+    plt.close()
 
 
 def plot_sr(sr, show=False, save=False, output="spikes.png"):
@@ -46,3 +47,4 @@ def plot_sr(sr, show=False, save=False, output="spikes.png"):
         plt.show()
     if save:
         plt.savefig(output)
+    plt.close()

@@ -19,7 +19,7 @@ from analyze_optimization import (
     pairplot,
 )
 from save_data import load_training_data, save_optimization_recap
-from network import simulate_network
+from network import simulate_network, generate_code
 from inference import (
     NRE_sequential_inference,
     NLE_sequential_inference,
@@ -202,10 +202,10 @@ if __name__ == "__main__":
     )
 
     obs_dict = {
-        "firing_rate": 1,
-        "mean_isi": 1000,
+        "firing_rate": 2,
+        "mean_isi": 500,
         "STO_amp": 9.5,
-        "STO_freq": 4.5,
+        "STO_freq": 7.5,
         "STO_std": 0.1,
     }
     obs_weights = {
