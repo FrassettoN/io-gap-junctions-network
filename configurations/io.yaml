@@ -71,8 +71,6 @@ simulations:
           E_rev2: -80
           tau_syn1: 1
           tau_syn2: 60
-          # tau_syn1: 1
-          # tau_syn2: 60
           E_rev1: 0
           E_rev2: -80
 
