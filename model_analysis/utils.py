@@ -35,7 +35,7 @@ def plot_vm(
                 t_end,
                 color="red",
                 alpha=0.2,
-                label="Poisson input (500 Hz, w=55)",
+                label="Poisson input (500 Hz, 10ms, w=55)",
             )
     plt.xlabel("Time (ms)", fontsize=14)
     plt.ylabel("Membrane potential (mV)", fontsize=14)
@@ -51,7 +51,7 @@ def plot_vm(
 
     # Show legend only if input is marked
     if input_times:
-        plt.legend(loc="upper right", fontsize=10, frameon=True, framealpha=0.9)
+        plt.legend(loc="lower right", fontsize=10, frameon=True, framealpha=0.9)
 
     plt.tight_layout()
 
@@ -94,7 +94,7 @@ def plot_sr(
                 t_end,
                 color="red",
                 alpha=0.2,
-                label="Poisson input (500 Hz, w=55)",
+                label="Poisson input (500 Hz, 10ms, w=55)",
             )
 
     # Thesis-quality styling
@@ -111,7 +111,7 @@ def plot_sr(
 
     # Show legend only if input marked
     if input_times:
-        plt.legend(loc="upper right", fontsize=10, frameon=True, framealpha=0.9)
+        plt.legend(loc="lower right", fontsize=10, frameon=True, framealpha=0.9)
 
     plt.tight_layout()
 
